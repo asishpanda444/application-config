@@ -66,3 +66,7 @@ resilience4j:
           timeout-duration: 0
           limit-refresh-period: 4
           limit-for-period: 2
+
+customer-url: http://customer:5001
+product-url: http://product:5002
+review-url: http://review:5003
