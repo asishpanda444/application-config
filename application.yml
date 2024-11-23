@@ -17,8 +17,52 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:5000/eureka
 
-# Zipkin
+# Actuator
 management:
-  tracing:
-    sampling:
-      probability: 1
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+    retry:
+      enabled: true
+    ratelimiters:
+      enabled: true
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+      sampling:
+        probability: 1
+
+# Resilience4J
+resilience4j:
+  circuitbreaker:
+    instances:
+      productBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+        register-health-indicator: true
+        automatic-transition-from-open-to-half-open-enabled: true
+        sliding-window-type: count_based
+        max-attempts: 5
+        wait-duration: 2s
+  retry:
+    instances:
+      productBreaker:
+        max-attempts: 4
+        wait-duration: 2s
+  ratelimiter:
+    instances:
+      productBreaker:
+          timeout-duration: 0
+          limit-refresh-period: 4
+          limit-for-period: 2
